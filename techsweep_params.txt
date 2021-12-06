@@ -1,0 +1,2 @@
+.param Len = 1u
+.param sb = 0

@@ -1,0 +1,1161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>main_window</class>
+ <widget class="QMainWindow" name="main_window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>696</width>
+    <height>580</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>NG Spice GUI</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout_6">
+    <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout_7">
+      <item row="0" column="0">
+       <widget class="QTabWidget" name="mainTabWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="generateGmIdCharts">
+         <attribute name="title">
+          <string>Generate GmId Charts</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="1" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <property name="spacing">
+             <number>6</number>
+            </property>
+            <property name="sizeConstraint">
+             <enum>QLayout::SetDefaultConstraint</enum>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <property name="verticalSpacing">
+               <number>6</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLabel" name="model_path_label">
+                <property name="text">
+                 <string>Model Path</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="browseModelbutton">
+                <property name="text">
+                 <string>Browse</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="modelPathLineEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="placeholderText">
+                 <string>Choose Model File Path</string>
+                </property>
+                <property name="clearButtonEnabled">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item alignment="Qt::AlignVCenter">
+             <widget class="QLabel" name="label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="sizeIncrement">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="baseSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+                <weight>75</weight>
+                <bold>true</bold>
+               </font>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string>choose sweep parameters</string>
+              </property>
+              <property name="scaledContents">
+               <bool>false</bool>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+              </property>
+              <property name="indent">
+               <number>-1</number>
+              </property>
+              <property name="buddy">
+               <cstring></cstring>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_4">
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>VDS</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string> L</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_2">
+                <property name="text">
+                 <string>VGS</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>VBS</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Preferred</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>105</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="generateVGSLineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="placeholderText">
+                 <string>min:step:max (Default 0:0.1:1)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="generateVDSlineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="placeholderText">
+                 <string>min:step:max (Default 0:0.1:1)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="generateVBSlineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="placeholderText">
+                 <string>min:step:max (Default 0:0.1:1)</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="generateLlineEdit">
+                <property name="placeholderText">
+                 <string>min1:step1:max1 min2:step2:max2 min3:step3:max3</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_12">
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_7">
+                <property name="text">
+                 <string>Expected size</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QLineEdit" name="expectedSizelineEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                  <weight>75</weight>
+                  <bold>true</bold>
+                 </font>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <spacer name="horizontalSpacer_4">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="generatepushButton">
+                <property name="text">
+                 <string>Generate</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0" colspan="2">
+               <widget class="QLabel" name="logGenerateChartslabel">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="plotGmIdCurves">
+         <attribute name="title">
+          <string>Plot GmId Curves</string>
+         </attribute>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="4" column="13">
+           <widget class="QComboBox" name="plotGmIdComboBox2_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="6">
+           <widget class="QComboBox" name="plotGmIdComboBox3_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="12">
+           <widget class="QComboBox" name="plotGmIdComboBox2_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>-----</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>/</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>*</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="5">
+           <widget class="QComboBox" name="plotGmIdComboBox3_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>-----</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>/</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>*</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="13">
+           <widget class="QComboBox" name="plotGmIdComboBox4_3">
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QLabel" name="label_12">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>L Range</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="3">
+           <widget class="QLabel" name="label_11">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Load Data</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4" colspan="5">
+           <widget class="QLineEdit" name="LRangPlot">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="placeholderText">
+             <string>mn1:st1:mx1 mn2:st2:mx2 mn3:st3:mx3</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="6">
+           <widget class="QComboBox" name="plotGmIdComboBox1_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="5">
+           <widget class="QComboBox" name="plotGmIdComboBox1_2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>/</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>*</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="4" colspan="5">
+           <widget class="QLineEdit" name="LoaDataPlotlineEdit">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="placeholderText">
+             <string>Path Of MOSFET Data File </string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="8" colspan="2">
+           <widget class="PlotWidget" name="plotGmIdwidget_2" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="5" column="0" rowspan="2" colspan="8">
+           <widget class="PlotWidget" name="plotGmIdwidget_3" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <widget class="QLabel" name="label_15">
+             <property name="geometry">
+              <rect>
+               <x>220</x>
+               <y>10</y>
+               <width>100</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item row="2" column="0" rowspan="2" colspan="8">
+           <widget class="PlotWidget" name="plotGmIdwidget_1" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <widget class="QLabel" name="label_13">
+             <property name="geometry">
+              <rect>
+               <x>220</x>
+               <y>10</y>
+               <width>100</width>
+               <height>31</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </widget>
+          </item>
+          <item row="5" column="8" colspan="2">
+           <widget class="PlotWidget" name="plotGmIdwidget_4" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="7" column="11">
+           <widget class="QComboBox" name="plotGmIdComboBox4_1">
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="12">
+           <widget class="QComboBox" name="plotGmIdComboBox4_2">
+            <item>
+             <property name="text">
+              <string>-----</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>/</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>*</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="11">
+           <widget class="QComboBox" name="plotGmIdComboBox2_1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="10" colspan="2">
+           <widget class="QPushButton" name="browseDataPlotbutton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="10">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Plot</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="10">
+           <widget class="QLabel" name="label_8">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Plot</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="4">
+           <widget class="QComboBox" name="plotGmIdComboBox1_1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="4">
+           <widget class="QComboBox" name="plotGmIdComboBox3_1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
+             <property name="text">
+              <string>------</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>ID</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GM</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GMBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>GDS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGG</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CGD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CDD</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CBS</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Plot</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="3">
+           <widget class="QLabel" name="label_9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Plot</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>696</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>modelPathLineEdit</tabstop>
+  <tabstop>generateVGSLineEdit</tabstop>
+  <tabstop>generateVDSlineEdit</tabstop>
+  <tabstop>generateVBSlineEdit</tabstop>
+  <tabstop>generateLlineEdit</tabstop>
+  <tabstop>browseModelbutton</tabstop>
+  <tabstop>generatepushButton</tabstop>
+  <tabstop>expectedSizelineEdit</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

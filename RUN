@@ -1,0 +1,1020 @@
+from dip_dop_ui import Ui_MainWindow
+from mainUi import Ui_main_window
+from random import seed
+from random import randint
+from lookup_3 import lookup_3
+from scipy.interpolate import interp1d
+import pyqtgraph as pg
+from PyQt5 import QtCore, QtGui, QtWidgets
+from dip_se_ui import Ui_MainWindow_dip_se
+from results_window_se_se import Ui_Results_window_se_se
+from CheckCapInput import CheckCapInput
+from NumberValidation import NumberValidation
+from se_se_ui import Ui_MainWindow_se
+from PathError import Ui_BrowseValidation
+from ErrorWindow import Ui_ErrorWindow
+import sys
+from plot_window import plot_window
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from techsweep_run_ngspice import techsweep_run_ngspice
+from graph_window import Ui_Graph_window
+from results_window import Ui_Table_of_results
+from get_length import get_length
+from get_vsb import get_vsb
+from get_vgs import get_vgs
+from get_vds import get_vds
+from get_capacitance import get_cap
+import pickle
+from dip_dop import dip_dop
+from dip_se_op import dip_se_op
+from se_se import se_se
+import numpy as np
+from CheckInput import CheckInput
+
+
+object_ui = Ui_main_window()
+
+class run(QtWidgets.QMainWindow, Ui_main_window, Ui_MainWindow, Ui_MainWindow_dip_se, Ui_MainWindow_se):
+
+    def __init__(self):
+
+        QtWidgets.QMainWindow.__init__(self)
+        Ui_main_window.setupUi(self, self)
+        self.connections()
+
+    def connections(self):
+        self.pushButton.clicked.connect(self.window_1)
+        self.pushButton_2.clicked.connect(self.window_2)
+        self.pushButton_3.clicked.connect(self.window_3)
+        self.browseModelbutton.clicked.connect(self.getModelPath_tab1)
+        #self.Model_File_path_browse_button.clicked.connect(self.getModelPath_tab2)
+        self.generatepushButton.clicked.connect(self.generateArray)
+        self.nmos_data_browse_button.clicked.connect(self.getNMOS_data)
+        self.pmos_data_browse_button.clicked.connect(self.getPMOS_data)
+        self.Launch_graph_window_button.clicked.connect(self.LaunchGraphWindow)
+
+        #self.generate_and_plot_button_se_se.clicked.connect(self.haboly)
+
+
+    def getModelPath_tab1(self):
+        self.modelPath = QFileDialog.getOpenFileName()[0]
+        self.modelPathLineEdit.setText(self.modelPath)
+
+    #def getModelPath_tab2(self):
+    #    self.modelPath2 = QFileDialog.getOpenFileName()[0]
+    #    self.Model_File_path_lineEdit.setText(self.modelPath2)
+
+    def getNMOS_data(self):
+        self.nmos_data_Path = QFileDialog.getOpenFileName()[0]
+        self.nmos_data_lineEdit.setText(self.nmos_data_Path)
+
+    def getPMOS_data(self):
+        self.pmos_data_Path = QFileDialog.getOpenFileName()[0]
+        self.pmos_data_lineEdit.setText(self.pmos_data_Path)
+
+    def getPlotParams(self):
+        self.wanted_l = self.length_range_lineEdit.text()
+        self.wanted_vds = self.VDS_range_lineEdit.text()
+        self.wanted_vsb = self.VSB_range_lineEdit.text()
+
+    def plot_window_gmid(self):
+        self.plot_window_gmid = QtWidgets.QMainWindow()
+        self.ui_plot_window_gmid = plot_window()
+        self.ui_plot_window_gmid.setupUi(self.plot_window_gmid)
+        self.var1 = self.ui_graph_window.var1_comboBox.currentText()
+        self.var2 = self.ui_graph_window.var2_comboBox.currentText()
+        self.model = self.ui_graph_window.comboBox.currentText()
+        self.plot_window_gmid.setWindowTitle(f'{self.var1}/{self.var2} vs. gm/id')
+        self.ui_plot_window_gmid.length_label.setText('Length:')
+        if self.ui_graph_window.length_comboBox.currentText() == 'All':
+            for i in self.used_L:
+                self.ui_plot_window_gmid.length_comboBox.addItem(i)
+        else:
+            self.ui_plot_window_gmid.length_comboBox.addItem(self.ui_graph_window.length_comboBox.currentText())
+        self.ui_plot_window_gmid.var1_label.setText(f'{self.var1}')
+        self.ui_plot_window_gmid.var2_label.setText(f'{self.var2}')
+        self.ui_plot_window_gmid.find_var1_pushButton.setText(f'Find {self.var1}')
+        self.ui_plot_window_gmid.find_var2_pushButton.setText(f'Find {self.var2}')
+        self.y_n, self.x_n, self.x_p, self.used_L, self.used_vds, self.used_vsb, self.out_var = lookup_3(self.nmos_data_Path,
+                                                                                                         self.pmos_data_Path,
+                                                                                                         self.vgs, self.vds,
+                                                                                                         self.vsb, self.l,
+                                                                                                         self.w, self.var1,
+                                                                                                         self.var2, self.model,
+                                                                                                         L=self.wanted_l,
+                                                                                                         vds=self.wanted_vds,
+                                                                                                         vsb=self.wanted_vsb)
+        self.current_L = self.ui_graph_window.length_comboBox.currentText()
+        self.current_vds = self.ui_graph_window.VDS_comboBox.currentText()
+        self.current_vsb = self.ui_graph_window.VSB_comboBox.currentText()
+
+        if self.current_L == 'All':
+            self.current_L_idx = len(self.used_L)
+        else:
+            self.current_L_idx = self.used_L.index(self.current_L)
+        self.current_vds_idx = self.used_vds.index(self.current_vds)
+        self.current_vsb_idx = self.used_vsb.index(self.current_vsb)
+
+        seed(1)
+
+        self.ui_plot_window_gmid.plot.setLabel('bottom', 'gm/id', size=20)
+        self.ui_plot_window_gmid.plot.setLabel('left', f'{self.var1}/{self.var2}', size=20)
+        self.ui_plot_window_gmid.plot.setLogMode(True, False)
+        self.ui_plot_window_gmid.plot.addLegend()
+        x = randint(0, 255)
+        y = randint(0, 255)
+        z = randint(0, 255)
+        if self.ui_graph_window.length_comboBox.currentText() == 'All':
+            for i in range(len(self.used_L)):
+                x = randint(0, 255)
+                y = randint(0, 255)
+                z = randint(0, 255)
+                if self.model == 'NMOS':
+                    self.ui_plot_window_gmid.plot.plot(self.x_n[self.current_vsb_idx][i][self.current_vds_idx],
+                                                       self.y_n[self.current_vsb_idx][i][self.current_vds_idx],
+                                                       name=f'L = {self.used_L[i]}um',
+                                                      pen=pg.mkPen(color=(x, y, z), width=3))
+                elif self.model == 'PMOS':
+                    self.ui_plot_window_gmid.plot.plot(self.x_p[self.current_vsb_idx][i][self.current_vds_idx],
+                                                       self.y_n[self.current_vsb_idx][i][self.current_vds_idx],
+                                                       name=f'L = {self.used_L[i]}um',
+                                                       pen=pg.mkPen(color=(x, y, z), width=3))
+        else:
+            if self.model == 'NMOS':
+                self.ui_plot_window_gmid.plot.plot(self.x_n[self.current_vsb_idx][self.current_L_idx][self.current_vds_idx],
+                                                   self.y_n[self.current_vsb_idx][self.current_L_idx][self.current_vds_idx],
+                                                   name=f'L = {self.used_L[self.current_L_idx]}um',
+                                                   pen=pg.mkPen(color=(x, y, z), width=3))
+            elif self.model == 'PMOS':
+                self.ui_plot_window_gmid.plot.plot(self.x_p[self.current_vsb_idx][i][self.current_vds_idx],
+                                                   self.y_n[self.current_vsb_idx][i][self.current_vds_idx],
+                                                   name=f'L = {self.used_L[i]}um',
+                                                   pen=pg.mkPen(color=(x, y, z), width=3))
+        self.plot_window_gmid.show()
+
+    def LaunchGraphWindow(self):
+        #self.nmos_data_Path = QFileDialog.getOpenFileName()[0]
+        self.path_nmos = self.nmos_data_lineEdit.text()
+        self.path_pmos = self.pmos_data_lineEdit.text()
+        if self.path_nmos == '':
+            self.PathError = QtWidgets.QMainWindow()
+            self.ui_PathError = Ui_BrowseValidation()
+            self.ui_PathError.setupUi(self.PathError)
+            self.PathError.show()
+            if self.ui_PathError.CloseButton2.clicked:
+                self.ui_PathError.CloseButton2.clicked.connect(self.ClosePathError)
+        elif self.path_pmos == '':
+            self.PathError = QtWidgets.QMainWindow()
+            self.ui_PathError = Ui_BrowseValidation()
+            self.ui_PathError.setupUi(self.PathError)
+            self.PathError.show()
+            if self.ui_PathError.CloseButton2.clicked:
+                self.ui_PathError.CloseButton2.clicked.connect(self.ClosePathError)
+        else:
+            with open(self.nmos_data_Path, 'rb') as out:
+                x = pickle.load(out)
+                out.close()
+            self.vgs = x['vgs']
+
+            with open(self.nmos_data_Path, 'rb') as out:
+                x = pickle.load(out)
+                out.close()
+            self.vds = x['vds']
+
+            with open(self.nmos_data_Path, 'rb') as out:
+                x = pickle.load(out)
+                out.close()
+            self.vsb = x['vsb']
+
+            with open(self.nmos_data_Path, 'rb') as out:
+                x = pickle.load(out)
+                out.close()
+            self.l = x['length']
+
+            with open(self.nmos_data_Path, 'rb') as out:
+                x = pickle.load(out)
+                out.close()
+            self.w = x['width']
+
+            self.wanted_l = self.length_range_lineEdit.text()
+            self.wanted_vds = self.VDS_range_lineEdit.text()
+            self.wanted_vsb = self.VSB_range_lineEdit.text()
+
+            self.flag1 = False
+            self.flag2 = False
+            self.flag3 = False
+
+            if self.wanted_l != '':
+                if self.wanted_l.count(':') == 2:
+                    if CheckInput(self.wanted_l):
+                      self.flag1 = True
+            else:
+                self.flag1 = True
+            if self.wanted_vds != '':
+                if self.wanted_vds.count(':') == 2:
+                    if CheckInput(self.wanted_vds):
+                      self.flag2 = True
+            else:
+                self.flag2 = True
+
+            if self.wanted_vsb != '':
+                if self.wanted_vsb.count(':') == 2:
+                    if CheckInput(self.wanted_vsb):
+                      self.flag3 = True
+            else:
+                self.flag3 = True
+
+            print(self.flag1, self.flag2, self.flag3)
+            if self.flag1 == True and self.flag2 == True and self.flag3 == True:
+                self.y_n, self.x_n, self.x_p, self.used_L, self.used_vds, self.used_vsb, self.out_var = lookup_3(self.nmos_data_Path,
+                                                                                                             self.pmos_data_Path,
+                                                                                                             self.vgs, self.vds,
+                                                                                                             self.vsb, self.l,
+                                                                                                             self.w, 'id', 'w', 'NMOS',
+                                                                                                             L=self.wanted_l,
+                                                                                                             vds=self.wanted_vds,
+                                                                                                             vsb=self.wanted_vsb)
+
+                self.graph_window1 = QtWidgets.QMainWindow()
+                self.ui_graph_window = Ui_Graph_window()
+                self.ui_graph_window.setupUi(self.graph_window1)
+
+
+                self.length, self.dum1, self.dum2 = get_length(self.wanted_l)
+                self.vds_plot, self.dum1, self.dum2 = get_vds(self.wanted_vds)
+                self.vsb_plot, self.dum1, self.dum2 = get_vsb(self.wanted_vsb)
+                self.L_flag = 0
+
+                for i in self.used_L:
+                    self.ui_graph_window.length_comboBox.addItem(i)
+                for i in self.used_vds:
+                    self.ui_graph_window.VDS_comboBox.addItem(i)
+                for i in self.used_vsb:
+                    self.ui_graph_window.VSB_comboBox.addItem(i)
+                if len(self.used_L) > 1:
+                    self.ui_graph_window.length_comboBox.addItem('All')
+
+                self.ui_graph_window.var1_comboBox.addItem('gm')
+                self.ui_graph_window.var1_comboBox.addItem('gds')
+                self.ui_graph_window.var1_comboBox.addItem('id')
+                self.ui_graph_window.var1_comboBox.addItem('w')
+                self.ui_graph_window.var1_comboBox.addItem('cgg')
+                self.ui_graph_window.var1_comboBox.addItem('cgs')
+                self.ui_graph_window.var2_comboBox.addItem('gm')
+                self.ui_graph_window.var2_comboBox.addItem('gds')
+                self.ui_graph_window.var2_comboBox.addItem('id')
+                self.ui_graph_window.var2_comboBox.addItem('w')
+                self.ui_graph_window.var2_comboBox.addItem('cgg')
+                self.ui_graph_window.var2_comboBox.addItem('cgs')
+
+                self.ui_graph_window.plot_pushButton.clicked.connect(self.plot_window_gmid)
+                self.graph_window1.show()
+
+
+            else:
+                self.ErrorWindow = QtWidgets.QMainWindow()
+                self.ui_ErrorWindow = Ui_ErrorWindow()
+                self.ui_ErrorWindow.setupUi(self.ErrorWindow)
+                self.ErrorWindow.show()
+                if self.ui_ErrorWindow.CloseButton.clicked:
+                    self.ui_ErrorWindow.CloseButton.clicked.connect(self.CloseErrorWindow)
+            '''
+            self.y_p, self.x_n, self.x_p, self.used_L, self.used_vds, self.used_vsb, self.out_var = lookup_3(self.nmos_data_Path,
+                                                                                                             self.pmos_data_Path,
+                                                                                                             self.vgs, self.vds,
+                                                                                                             self.vsb, self.l,
+                                                                                                             self.w, 'id', 'w', 'PMOS',
+                                                                                                             L=self.wanted_l,
+                                                                                                             vds=self.wanted_vds,
+                                                                                                             vsb=self.wanted_vsb)
+            '''
+
+
+
+
+
+            '''
+            if len(self.vds_plot) == 0:
+                with open(self.nmos_data_Path, 'rb') as out:
+                    x = pickle.load(out)
+                    out.close()
+                a = x['vds']
+                self.ui_graph_window.VDS_comboBox.addItem(str(float(a[-1]) / 2))
+            if len(self.length) == 0:
+                with open(self.nmos_data_Path, 'rb') as out:
+                    x = pickle.load(out)
+                    out.close()
+                a = x['length']
+                self.L_flag = 1
+                self.ui_graph_window.length_comboBox.addItem(a[0])
+            if len(self.vsb_plot) == 0:
+                self.ui_graph_window.VSB_comboBox.addItem('0')
+            '''
+
+
+    def ClosePathError(self):
+        self.PathError.close()
+
+    def generateArray(self):
+        #print(self.generateLlineEdit.text().count(':'))
+        self.path = self.modelPathLineEdit.text()
+        if self.path == '':
+            self.PathError = QtWidgets.QMainWindow()
+            self.ui_PathError = Ui_BrowseValidation()
+            self.ui_PathError.setupUi(self.PathError)
+            self.PathError.show()
+            if self.ui_PathError.CloseButton2.clicked:
+                self.ui_PathError.CloseButton2.clicked.connect(self.ClosePathError)
+        else:
+
+            self.l = self.generateLlineEdit.text()
+            if self.l == '':
+                self.l = '0.2:0.2:1'
+
+            self.vgs = self.generateVGSLineEdit.text()
+            if self.vgs == '':
+                self.vgs = '0:0.1:1'
+
+            self.vds = self.generateVDSlineEdit.text()
+            if self.vds == '':
+                self.vds = '0:0.2:1'
+
+            self.vsb = self.generateVBSlineEdit.text()
+            if self.vsb == '':
+                self.vsb = '0:0.5:1'
+
+            self.w = self.Width_lineEdit.text()
+            if self.w == '':
+                self.w = '1'
+
+            self.temp = self.temp_lineEdit.text()
+            if self.temp == '':
+                self.temp = '27'
+
+            if (self.l.count(':') == 2 or self.l.count(':') == 0) and self.vgs.count(':') == 2 and self.vds.count(':') == 2 and self.vsb.count(':') == 2:
+                if CheckInput(self.l) and CheckInput(self.vgs) and CheckInput(self.vds) and CheckInput(self.vsb):
+                    techsweep_run_ngspice(self.modelPath, self.w, self.temp, self.l, self.vsb, self.vgs, self.vds)
+                else:
+                    self.ErrorWindow = QtWidgets.QMainWindow()
+                    self.ui_ErrorWindow = Ui_ErrorWindow()
+                    self.ui_ErrorWindow.setupUi(self.ErrorWindow)
+                    self.ErrorWindow.show()
+                    if self.ui_ErrorWindow.CloseButton.clicked:
+                        self.ui_ErrorWindow.CloseButton.clicked.connect(self.CloseErrorWindow)
+
+            else:
+                self.ErrorWindow = QtWidgets.QMainWindow()
+                self.ui_ErrorWindow = Ui_ErrorWindow()
+                self.ui_ErrorWindow.setupUi(self.ErrorWindow)
+                self.ErrorWindow.show()
+                if self.ui_ErrorWindow.CloseButton.clicked:
+                    self.ui_ErrorWindow.CloseButton.clicked.connect(self.CloseErrorWindow)
+
+    def CloseErrorWindow(self):
+        self.ErrorWindow.close()
+
+
+
+
+    def launch_plot_window_dip_dop(self):
+
+        #self.path = self.modelPathLineEdit.text()
+        self.Path_model = self.ui.model_path_lineEdit_dip_dop.text()
+        self.Path_netlist = self.ui.netlist_path_lineEdit_dip_dop.text()
+        if self.Path_model == '' or self.Path_netlist == '':
+            self.PathError = QtWidgets.QMainWindow()
+            self.ui_PathError = Ui_BrowseValidation()
+            self.ui_PathError.setupUi(self.PathError)
+            self.PathError.show()
+            if self.ui_PathError.CloseButton2.clicked:
+                self.ui_PathError.CloseButton2.clicked.connect(self.ClosePathError)
+        else:
+            self.window1 = QtWidgets.QMainWindow()
+            self.ui_plot_window = plot_window()
+            self.ui_plot_window.setupUi(self.window1)
+            self.window1.setWindowTitle('Differential Gain vs. Frequency')
+            self.ui_plot_window.length_label.setText('CL:')
+            self.ui_plot_window.var1_label.setText('Av,d')
+            self.ui_plot_window.var2_label.setText('Frequency')
+            self.ui_plot_window.find_var1_pushButton.setText('Find Av,d')
+            self.ui_plot_window.find_var2_pushButton.setText('Find Frequency')
+
+
+            self.window2 = QtWidgets.QMainWindow()
+            self.ui_plot_window2 = plot_window()
+            self.ui_plot_window2.setupUi(self.window2)
+            self.window2.setWindowTitle('Common Mode Gain vs. Frequency')
+            self.ui_plot_window2.length_label.setText('CL:')
+            self.ui_plot_window2.var1_label.setText('Av,cm')
+            self.ui_plot_window2.var2_label.setText('Frequency')
+            self.ui_plot_window2.find_var1_pushButton.setText('Find Av,cm')
+            self.ui_plot_window2.find_var2_pushButton.setText('Find Frequency')
+
+            self.cap = self.ui.Capacitive_load_lineedit_dip_dop.text()
+            if self.cap == '':
+                self.cap = '1p'
+            self.supply = self.ui.supply_voltage_lineedit_dip_dop.text()
+            self.vincm = self.ui.VINCM_lineedit_dip_dop.text()
+            self.start_freq = self.ui.start_freq_lineEdit_dip_dop.text()
+            self.stop_freq = self.ui.stop_freq_lineEdit_dip_dop.text()
+            self.no_of_points = self.ui.no_of_points_lineedit_dip_dop.text()
+            self.vdd = self.ui.VDD_lineedit_dip_dop.text()
+            self.gnd = self.ui.ground_lineedit_dip_dop.text()
+            self.vinn = self.ui.VINN_lineedit_dip_dop.text()
+            self.vinp = self.ui.VINP_lineedit_dip_dop.text()
+            self.voutn = self.ui.VOUTN_lineedit_dip_dop.text()
+            self.voutp = self.ui.VOUTP_lineedit_dip_dop.text()
+
+            #print(CheckCapInput(self.cap))
+            #print(NumberValidation(self.supply))
+            #print(CheckCapInput(self.vincm))
+            #print(NumberValidation(self.start_freq))
+            if CheckCapInput(self.cap) and NumberValidation(self.supply) and CheckCapInput(self.vincm) and NumberValidation(self.start_freq) and CheckCapInput(self.stop_freq) and NumberValidation(self.no_of_points):
+
+
+                self.list_cap = get_cap(self.cap)
+                self.final_results = []
+
+                seed(1)
+
+                self.ui_plot_window.plot.setLabel('bottom', 'Frequency (Hz)', size=20)
+                self.ui_plot_window.plot.setLabel('left', 'Av,d (dB)', size=20)
+                self.ui_plot_window.plot.setLogMode(True, False)
+                self.ui_plot_window.plot.addLegend()
+
+                self.ui_plot_window2.plot.setLabel('bottom', 'Frequency (Hz)', size=20)
+                self.ui_plot_window2.plot.setLabel('left', 'Av,cm (dB)', size=20)
+                self.ui_plot_window2.plot.setLogMode(True, False)
+                self.ui_plot_window2.plot.addLegend()
+
+                for i in self.list_cap:
+                    self.result = dip_dop(self.model_path_dip_dop_data_Path, self.netlist_path_dip_dop_data_Path, self.vdd, self.gnd, self.vinn,
+                            self.vinp, self.voutn, self.voutp, self.supply, self.vincm, i, self.start_freq, self.stop_freq,
+                            self.no_of_points)
+                    self.final_results.append(self.result)
+
+                    x = randint(0, 255)
+                    y = randint(0, 255)
+                    z = randint(0, 255)
+                    self.ui_plot_window.plot.plot(self.result[7], self.result[8], name=f'CL = {i}F',
+                                                  pen=pg.mkPen(color=(x, y, z), width=3))
+                    self.ui_plot_window2.plot.plot(self.result[7], self.result[9], name=f'CL = {i}F',
+                                                  pen=pg.mkPen(color=(x, y, z), width=3))
+
+                    self.ui_plot_window.length_comboBox.addItem(i + 'F')
+                    self.ui_plot_window2.length_comboBox.addItem(i + 'F')
+
+
+
+                self.window3 = QtWidgets.QMainWindow()
+                self.ui_table = Ui_Table_of_results()
+                self.ui_table.setupUi(self.window3)
+
+                self.ui_table.tableWidget.setRowCount(len(self.list_cap))
+
+                for i in range(len(self.list_cap)):
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.ui_table.tableWidget.setVerticalHeaderItem(i, self.item)
+
+                    self.item.setText('')
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 0, self.item)
+                    self.item.setText(f'CL={self.list_cap[i]}')
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 1, self.item)
+                    self.item.setText(str(self.final_results[i][0]) + str(self.final_results[i][1]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 2, self.item)
+                    self.item.setText(str(self.final_results[i][6]) + str(self.final_results[i][1]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 3, self.item)
+                    self.item.setText(str(self.final_results[i][2]) + str(self.final_results[i][3]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 4, self.item)
+                    self.item.setText(str(self.final_results[i][0] * self.final_results[i][2]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 5, self.item)
+                    self.item.setText(str(self.final_results[i][4]) + str(self.final_results[i][5]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 6, self.item)
+                    self.item.setText(str(self.final_results[i][10]) + str(self.final_results[i][1]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+                    self.item = self.ui_table.tableWidget.verticalHeaderItem(i)
+
+                self.ui_plot_window.find_var1_pushButton.clicked.connect(self.find_values_dip_dop_diff_var1)
+                self.ui_plot_window.find_var2_pushButton.clicked.connect(self.find_values_dip_dop_diff_var2)
+                self.ui_plot_window2.find_var1_pushButton.clicked.connect(self.find_values_dip_dop_CM_var1)
+                self.ui_plot_window2.find_var2_pushButton.clicked.connect(self.find_values_dip_dop_CM_var2)
+
+                self.window1.show()
+                self.window2.show()
+                self.window3.show()
+            else:
+                self.ErrorWindow = QtWidgets.QMainWindow()
+                self.ui_ErrorWindow = Ui_ErrorWindow()
+                self.ui_ErrorWindow.setupUi(self.ErrorWindow)
+                self.ErrorWindow.show()
+                if self.ui_ErrorWindow.CloseButton.clicked:
+                    self.ui_ErrorWindow.CloseButton.clicked.connect(self.CloseErrorWindow)
+
+    def find_values_dip_dop_diff_var2(self):
+        self.current_cap = self.ui_plot_window.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_2 = interp1d(self.current_results[8], self.current_results[7])
+        self.value = self.interp_find_var_2(float(self.ui_plot_window.var_1_lineEdit.text()))
+        self.ui_plot_window.var2_result_label.setText(f'Frequency = {str(self.value)} at Av,d = '
+                                                            f'{self.ui_plot_window.var_1_lineEdit.text()}')
+
+    def find_values_dip_dop_diff_var1(self):
+        self.current_cap = self.ui_plot_window.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_1 = interp1d(self.current_results[7], self.current_results[8])
+        self.value = self.interp_find_var_1(float(self.ui_plot_window.var_2_lineEdit_2.text()))
+        self.ui_plot_window.var2_result_label.setText(f'Av,d = {str(self.value)} at frequency = '
+                                                      f'{self.ui_plot_window.var_2_lineEdit_2.text()}')
+
+
+    def find_values_dip_dop_CM_var2(self):
+        self.current_cap = self.ui_plot_window2.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_2 = interp1d(self.current_results[9], self.current_results[7])
+        self.value = self.interp_find_var_2(float(self.ui_plot_window2.var_1_lineEdit.text()))
+        self.ui_plot_window2.var2_result_label.setText(f'Frequency = {str(self.value)} at Av,cm = '
+                                                            f'{self.ui_plot_window2.var_1_lineEdit.text()}')
+
+    def find_values_dip_dop_CM_var1(self):
+        self.current_cap = self.ui_plot_window2.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_1 = interp1d(self.current_results[7], self.current_results[9])
+        self.value = self.interp_find_var_1(float(self.ui_plot_window2.var_2_lineEdit_2.text()))
+        self.ui_plot_window2.var2_result_label.setText(f'Av,cm = {str(self.value)} at frequency = '
+                                                      f'{self.ui_plot_window2.var_2_lineEdit_2.text()}')
+
+
+
+    def window_1(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self.window)
+        self.window.show()
+        self.ui.model_path_browse_button_dip_dop.clicked.connect(self.get_model_path_dip_dop_ota)
+        self.ui.Netlist_path_browse_button_dip_dop.clicked.connect(self.get_netlist_path_dip_dop_ota)
+        self.ui.generate_and_plot_button_dip_dop.clicked.connect(self.launch_plot_window_dip_dop)
+
+    def get_model_path_dip_dop_ota(self):
+        self.model_path_dip_dop_data_Path = QFileDialog.getOpenFileName()[0]
+        self.ui.model_path_lineEdit_dip_dop.setText(self.model_path_dip_dop_data_Path)
+
+    def get_netlist_path_dip_dop_ota(self):
+        self.netlist_path_dip_dop_data_Path = QFileDialog.getOpenFileName()[0]
+        self.ui.netlist_path_lineEdit_dip_dop.setText(self.netlist_path_dip_dop_data_Path)
+
+
+    def launch_plot_window_dip_se(self):
+
+        self.Path_model = self.ui.model_path_lineEdit_dip_se.text()
+        self.Path_netlist = self.ui.netlist_path_lineEdit_dip_se.text()
+        if self.Path_model == '' or self.Path_netlist == '':
+            self.PathError = QtWidgets.QMainWindow()
+            self.ui_PathError = Ui_BrowseValidation()
+            self.ui_PathError.setupUi(self.PathError)
+            self.PathError.show()
+            if self.ui_PathError.CloseButton2.clicked:
+                self.ui_PathError.CloseButton2.clicked.connect(self.ClosePathError)
+        else:
+
+            self.window1 = QtWidgets.QMainWindow()
+            self.ui_plot_window = plot_window()
+            self.ui_plot_window.setupUi(self.window1)
+            self.window1.setWindowTitle('Differential Gain vs. Frequency')
+            self.ui_plot_window.length_label.setText('CL:')
+            self.ui_plot_window.var1_label.setText('Av,d')
+            self.ui_plot_window.var2_label.setText('Frequency')
+            self.ui_plot_window.find_var1_pushButton.setText('Find Av,d')
+            self.ui_plot_window.find_var2_pushButton.setText('Find Frequency')
+
+            self.window2 = QtWidgets.QMainWindow()
+            self.ui_plot_window2 = plot_window()
+            self.ui_plot_window2.setupUi(self.window2)
+            self.window2.setWindowTitle('Common Mode Gain vs. Frequency')
+            self.ui_plot_window2.length_label.setText('CL:')
+            self.ui_plot_window2.var1_label.setText('Av,cm')
+            self.ui_plot_window2.var2_label.setText('Frequency')
+            self.ui_plot_window2.find_var1_pushButton.setText('Find Av,cm')
+            self.ui_plot_window2.find_var2_pushButton.setText('Find Frequency')
+
+            self.cap = self.ui.Capacitive_load_lineedit_dip_se.text()
+            if self.cap == '':
+                self.cap = '1p'
+            self.supply = self.ui.supply_voltage_lineedit_dip_se.text()
+            self.vincm = self.ui.VINCM_lineedit_dip_se.text()
+            self.start_freq = self.ui.start_freq_lineEdit_dip_se.text()
+            self.stop_freq = self.ui.stop_freq_lineEdit_dip_se.text()
+            self.no_of_points = self.ui.no_of_points_lineedit_dip_se.text()
+            self.vdd = self.ui.VDD_lineedit_dip_se.text()
+            self.gnd = self.ui.ground_lineedit_dip_se.text()
+            self.vinn = self.ui.VINN_lineedit_dip_se.text()
+            self.vinp = self.ui.VINP_lineedit_dip_se.text()
+            self.vout = self.ui.VOUTN_lineedit_dip_se.text()
+
+            if CheckCapInput(self.cap) and NumberValidation(self.supply) and CheckCapInput(
+                    self.vincm) and NumberValidation(self.start_freq) and CheckCapInput(
+                    self.stop_freq) and NumberValidation(self.no_of_points):
+
+                self.list_cap = get_cap(self.cap)
+                self.final_results = []
+
+                seed(1)
+
+                self.ui_plot_window.plot.setLabel('bottom', 'Frequency (Hz)', size=20)
+                self.ui_plot_window.plot.setLabel('left', 'Av,d (dB)', size=20)
+                self.ui_plot_window.plot.setLogMode(True, False)
+                self.ui_plot_window.plot.addLegend()
+
+                self.ui_plot_window2.plot.setLabel('bottom', 'Frequency (Hz)', size=20)
+                self.ui_plot_window2.plot.setLabel('left', 'Av,cm (dB)', size=20)
+                self.ui_plot_window2.plot.setLogMode(True, False)
+                self.ui_plot_window2.plot.addLegend()
+
+                for i in self.list_cap:
+                    self.result = dip_se_op(self.model_path_dip_se_data_Path, self.netlist_path_dip_se_data_Path, self.vdd, self.gnd, self.vinn,
+                            self.vinp, self.vout, self.supply, self.vincm, i, self.start_freq, self.stop_freq,
+                            self.no_of_points)
+                    self.final_results.append(self.result)
+
+                    x = randint(0, 255)
+                    y = randint(0, 255)
+                    z = randint(0, 255)
+                    self.ui_plot_window.plot.plot(self.result[7], self.result[8], name=f'CL = {i}F',
+                                                  pen=pg.mkPen(color=(x, y, z), width=3))
+                    self.ui_plot_window2.plot.plot(self.result[7], self.result[9], name=f'CL = {i}F',
+                                                  pen=pg.mkPen(color=(x, y, z), width=3))
+                    self.ui_plot_window.length_comboBox.addItem(i + 'F')
+                    self.ui_plot_window2.length_comboBox.addItem(i + 'F')
+
+                self.window3 = QtWidgets.QMainWindow()
+                self.ui_table = Ui_Table_of_results()
+                self.ui_table.setupUi(self.window3)
+
+                self.ui_table.tableWidget.setRowCount(len(self.list_cap))
+
+                for i in range(len(self.list_cap)):
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 0, self.item)
+                    self.item.setText(f'CL={self.list_cap[i]}')
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 1, self.item)
+                    self.item.setText(str(self.final_results[i][0]) + str(self.final_results[i][1]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 2, self.item)
+                    self.item.setText(str(self.final_results[i][6]) + str(self.final_results[i][1]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 3, self.item)
+                    self.item.setText(str(self.final_results[i][2]) + str(self.final_results[i][3]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 4, self.item)
+                    self.item.setText(str(self.final_results[i][0] * self.final_results[i][2]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 5, self.item)
+                    self.item.setText(str(self.final_results[i][4]) + str(self.final_results[i][5]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 6, self.item)
+                    self.item.setText(str(self.final_results[i][10]) + str(self.final_results[i][1]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                self.ui_plot_window.find_var1_pushButton.clicked.connect(self.find_values_dip_se_diff_var1)
+                self.ui_plot_window.find_var2_pushButton.clicked.connect(self.find_values_dip_se_diff_var2)
+                self.ui_plot_window2.find_var1_pushButton.clicked.connect(self.find_values_dip_se_CM_var1)
+                self.ui_plot_window2.find_var2_pushButton.clicked.connect(self.find_values_dip_se_CM_var2)
+
+                self.window1.show()
+                self.window2.show()
+                self.window3.show()
+            else:
+                self.ErrorWindow = QtWidgets.QMainWindow()
+                self.ui_ErrorWindow = Ui_ErrorWindow()
+                self.ui_ErrorWindow.setupUi(self.ErrorWindow)
+                self.ErrorWindow.show()
+                if self.ui_ErrorWindow.CloseButton.clicked:
+                    self.ui_ErrorWindow.CloseButton.clicked.connect(self.CloseErrorWindow)
+
+
+    def find_values_dip_se_diff_var2(self):
+        self.current_cap = self.ui_plot_window.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_2 = interp1d(self.current_results[8], self.current_results[7])
+        self.value = self.interp_find_var_2(float(self.ui_plot_window.var_1_lineEdit.text()))
+        self.ui_plot_window.var2_result_label.setText(f'Frequency = {str(self.value)} at Av,d = '
+                                                            f'{self.ui_plot_window.var_1_lineEdit.text()}')
+
+    def find_values_dip_se_diff_var1(self):
+        self.current_cap = self.ui_plot_window.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_1 = interp1d(self.current_results[7], self.current_results[8])
+        self.value = self.interp_find_var_1(float(self.ui_plot_window.var_2_lineEdit_2.text()))
+        self.ui_plot_window.var2_result_label.setText(f'Av,d = {str(self.value)} at frequency = '
+                                                      f'{self.ui_plot_window.var_2_lineEdit_2.text()}')
+
+
+    def find_values_dip_se_CM_var2(self):
+        self.current_cap = self.ui_plot_window2.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_2 = interp1d(self.current_results[9], self.current_results[7])
+        self.value = self.interp_find_var_2(float(self.ui_plot_window2.var_1_lineEdit.text()))
+        self.ui_plot_window2.var2_result_label.setText(f'Frequency = {str(self.value)} at Av,cm = '
+                                                            f'{self.ui_plot_window2.var_1_lineEdit.text()}')
+
+    def find_values_dip_se_CM_var1(self):
+        self.current_cap = self.ui_plot_window2.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_1 = interp1d(self.current_results[7], self.current_results[9])
+        self.value = self.interp_find_var_1(float(self.ui_plot_window2.var_2_lineEdit_2.text()))
+        self.ui_plot_window2.var2_result_label.setText(f'Av,cm = {str(self.value)} at frequency = '
+                                                      f'{self.ui_plot_window2.var_2_lineEdit_2.text()}')
+
+
+
+    def window_2(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_MainWindow_dip_se()
+        self.ui.setupUi(self.window)
+        self.window.show()
+        self.ui.model_path_browse_button_dip_se.clicked.connect(self.get_model_path_dip_se_ota)
+        self.ui.Netlist_path_browse_button_dip_se.clicked.connect(self.get_netlist_path_dip_se_ota)
+        self.ui.generate_and_plot_button_dip_se.clicked.connect(self.launch_plot_window_dip_se)
+
+    def get_model_path_dip_se_ota(self):
+        self.model_path_dip_se_data_Path = QFileDialog.getOpenFileName()[0]
+        self.ui.model_path_lineEdit_dip_se.setText(self.model_path_dip_se_data_Path)
+
+    def get_netlist_path_dip_se_ota(self):
+        self.netlist_path_dip_se_data_Path = QFileDialog.getOpenFileName()[0]
+        self.ui.netlist_path_lineEdit_dip_se.setText(self.netlist_path_dip_se_data_Path)
+
+
+    def launch_plot_window_se_se(self):
+
+        self.Path_model = self.ui.model_path_lineEdit_se_se.text()
+        self.Path_netlist = self.ui.netlist_path_lineEdit_se_se.text()
+
+        if self.Path_model == '' or self.Path_netlist == '':
+            self.PathError = QtWidgets.QMainWindow()
+            self.ui_PathError = Ui_BrowseValidation()
+            self.ui_PathError.setupUi(self.PathError)
+            self.PathError.show()
+            if self.ui_PathError.CloseButton2.clicked:
+                self.ui_PathError.CloseButton2.clicked.connect(self.ClosePathError)
+        else:
+
+            self.window1 = QtWidgets.QMainWindow()
+            self.ui_plot_window = plot_window()
+            self.ui_plot_window.setupUi(self.window1)
+            self.window1.setWindowTitle('Gain vs. Frequency')
+            self.ui_plot_window.length_label.setText('CL:')
+            self.ui_plot_window.var1_label.setText('Gain')
+            self.ui_plot_window.var2_label.setText('Frequency')
+            self.ui_plot_window.find_var1_pushButton.setText('Find Gain')
+            self.ui_plot_window.find_var2_pushButton.setText('Find Frequency')
+
+            self.cap = self.ui.Capacitive_load_lineedit_se_se.text()
+            if self.cap == '':
+                self.cap = '1p'
+            self.supply = self.ui.supply_voltage_lineedit_se_se.text()
+            self.vincm = self.ui.VINCM_lineedit_se_se.text()
+            self.start_freq = self.ui.start_freq_lineEdit_se_se.text()
+            self.stop_freq = self.ui.stop_freq_lineEdit_se_se.text()
+            self.no_of_points = self.ui.no_of_points_lineedit_se_se.text()
+            self.vdd = self.ui.VDD_lineedit_se_se.text()
+            self.gnd = self.ui.ground_lineedit_se_se.text()
+            self.vin = self.ui.VIN_lineedit_se_se.text()
+            self.vout = self.ui.VOUT_lineedit_se_se.text()
+
+            if CheckCapInput(self.cap) and NumberValidation(self.supply) and CheckCapInput(
+                    self.vincm) and NumberValidation(self.start_freq) and CheckCapInput(
+                    self.stop_freq) and NumberValidation(self.no_of_points):
+
+
+                self.list_cap = get_cap(self.cap)
+                self.final_results = []
+
+                seed(1)
+
+                self.ui_plot_window.plot.setLabel('bottom', 'Frequency (Hz)', size=20)
+                self.ui_plot_window.plot.setLabel('left', 'Av,d (dB)', size=20)
+                self.ui_plot_window.plot.setLogMode(True, False)
+                self.ui_plot_window.plot.addLegend()
+
+                for i in self.list_cap:
+                    self.result = se_se(self.model_path_se_se_data_Path, self.netlist_path_se_se_data_Path, self.vdd,
+                                            self.gnd, self.vin, self.vout, self.supply, self.vincm, i, self.start_freq, self.stop_freq,
+                                            self.no_of_points)
+
+
+                    self.final_results.append(self.result)
+
+                    x = randint(0, 255)
+                    y = randint(0, 255)
+                    z = randint(0, 255)
+                    self.ui_plot_window.plot.plot(self.result[6], self.result[7], name=f'CL = {i}F',
+                                                  pen=pg.mkPen(color=(x, y, z), width=3))
+                    self.ui_plot_window.length_comboBox.addItem(i + 'F')
+
+                self.window3 = QtWidgets.QMainWindow()
+                self.ui_table = Ui_Results_window_se_se()
+                self.ui_table.setupUi(self.window3)
+
+                self.ui_table.tableWidget.setRowCount(len(self.list_cap))
+
+                for i in range(len(self.list_cap)):
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 0, self.item)
+                    self.item.setText(f'CL={self.list_cap[i]}')
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 1, self.item)
+                    self.item.setText(str(self.final_results[i][0]) + str(self.final_results[i][1]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 2, self.item)
+                    self.item.setText(str(self.final_results[i][2]) + str(self.final_results[i][3]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 4, self.item)
+                    self.item.setText(str(self.final_results[i][0] * self.final_results[i][2]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+                    self.item = QtWidgets.QTableWidgetItem()
+                    self.item.setFlags(
+                        QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsDragEnabled
+                        | QtCore.Qt.ItemIsDropEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.ui_table.tableWidget.setItem(i, 3, self.item)
+                    self.item.setText(str(self.final_results[i][4]) + str(self.final_results[i][5]))
+                    self.item.setTextAlignment(QtCore.Qt.AlignCenter)
+
+
+
+                self.ui_plot_window.find_var1_pushButton.clicked.connect(self.find_values_se_se_var1)
+                self.ui_plot_window.find_var2_pushButton.clicked.connect(self.find_values_se_se_var2)
+                self.window1.show()
+                self.window3.show()
+
+            else:
+                self.ErrorWindow = QtWidgets.QMainWindow()
+                self.ui_ErrorWindow = Ui_ErrorWindow()
+                self.ui_ErrorWindow.setupUi(self.ErrorWindow)
+                self.ErrorWindow.show()
+                if self.ui_ErrorWindow.CloseButton.clicked:
+                    self.ui_ErrorWindow.CloseButton.clicked.connect(self.CloseErrorWindow)
+
+
+    def find_values_se_se_var2(self):
+        self.current_cap = self.ui_plot_window.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_2 = interp1d(self.current_results[7], self.current_results[6])
+        self.value = self.interp_find_var_2(float(self.ui_plot_window.var_1_lineEdit.text()))
+        self.ui_plot_window.var2_result_label.setText(f'Frequency = {str(self.value)} at Gain = '
+                                                            f'{self.ui_plot_window.var_1_lineEdit.text()}')
+
+    def find_values_se_se_var1(self):
+        self.current_cap = self.ui_plot_window.length_comboBox.currentText().replace('F', '')
+        self.current_results = self.final_results[self.list_cap.index(self.current_cap)]
+        self.interp_find_var_1 = interp1d(self.current_results[6], self.current_results[7])
+        self.value = self.interp_find_var_1(float(self.ui_plot_window.var_2_lineEdit_2.text()))
+        self.ui_plot_window.var2_result_label.setText(f'Gain = {str(self.value)} at frequency = '
+                                                      f'{self.ui_plot_window.var_2_lineEdit_2.text()}')
+
+
+
+
+    def window_3(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_MainWindow_se()
+        self.ui.setupUi(self.window)
+        self.window.show()
+        self.ui.model_path_browse_button_se_se.clicked.connect(self.get_model_path_se_se_ota)
+        self.ui.Netlist_path_browse_button_se_se.clicked.connect(self.get_netlist_path_se_se_ota)
+        self.ui.generate_and_plot_button_se_se.clicked.connect(self.launch_plot_window_se_se)
+
+
+    def get_model_path_se_se_ota(self):
+        self.model_path_se_se_data_Path = QFileDialog.getOpenFileName()[0]
+        self.ui.model_path_lineEdit_se_se.setText(self.model_path_se_se_data_Path)
+
+    def get_netlist_path_se_se_ota(self):
+        self.netlist_path_se_se_data_Path = QFileDialog.getOpenFileName()[0]
+        self.ui.netlist_path_lineEdit_se_se.setText(self.netlist_path_se_se_data_Path)
+
+
+
+
+
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    form = run()
+    form.show()
+    app.exec_()
+
+

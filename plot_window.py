@@ -1,0 +1,132 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'plot_window.ui'
+#
+# Created by: PyQt5 UI code generator 5.13.0
+#
+# WARNING! All changes made in this file will be lost!
+
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+import pyqtgraph as pg
+
+class plot_window(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(569, 484)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainWindow.sizePolicy().hasHeightForWidth())
+        MainWindow.setSizePolicy(sizePolicy)
+        MainWindow.setMinimumSize(QtCore.QSize(20, 40))
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setObjectName("verticalLayout")
+
+        self.plot = pg.PlotWidget(self.centralwidget)
+        self.plot.setObjectName("plot_widget")
+        self.verticalLayout.addWidget(self.plot)
+        self.plot.setBackground('w')
+        self.plot.showGrid(x=True, y=True)
+
+        self.verticalLayout_2.addLayout(self.verticalLayout)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.find_values_label = QtWidgets.QLabel(self.centralwidget)
+        self.find_values_label.setObjectName("find_values_label")
+        self.verticalLayout_3.addWidget(self.find_values_label)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.length_label = QtWidgets.QLabel(self.centralwidget)
+        self.length_label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.length_label.setObjectName("length_label")
+        self.horizontalLayout_2.addWidget(self.length_label)
+        self.length_comboBox = QtWidgets.QComboBox(self.centralwidget)
+        self.length_comboBox.setObjectName("length_comboBox")
+        self.horizontalLayout_2.addWidget(self.length_comboBox)
+        spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+        self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.var1_label = QtWidgets.QLabel(self.centralwidget)
+        self.var1_label.setText("")
+        self.var1_label.setObjectName("var1_label")
+        self.horizontalLayout_3.addWidget(self.var1_label)
+        self.var_1_lineEdit = QtWidgets.QLineEdit(self.centralwidget)
+        self.var_1_lineEdit.setObjectName("var_1_lineEdit")
+        self.horizontalLayout_3.addWidget(self.var_1_lineEdit)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_3)
+        self.horizontalLayout_4 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.var2_label = QtWidgets.QLabel(self.centralwidget)
+        self.var2_label.setText("")
+        self.var2_label.setObjectName("var2_label")
+        self.horizontalLayout_4.addWidget(self.var2_label)
+        self.var_2_lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
+        self.var_2_lineEdit_2.setObjectName("var_2_lineEdit_2")
+        self.horizontalLayout_4.addWidget(self.var_2_lineEdit_2)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
+        self.horizontalLayout_5 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.find_var2_pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.find_var2_pushButton.setText("")
+        self.find_var2_pushButton.setObjectName("find_var2_pushButton")
+        self.horizontalLayout_5.addWidget(self.find_var2_pushButton)
+        self.find_var1_pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.find_var1_pushButton.setText("")
+        self.find_var1_pushButton.setObjectName("find_var1_pushButton")
+        self.horizontalLayout_5.addWidget(self.find_var1_pushButton)
+        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
+        self.var2_result_label = QtWidgets.QLabel(self.centralwidget)
+        self.var2_result_label.setText("")
+        self.var2_result_label.setObjectName("var2_result_label")
+        self.verticalLayout_3.addWidget(self.var2_result_label)
+        self.var1_result_label = QtWidgets.QLabel(self.centralwidget)
+        self.var1_result_label.setText("")
+        self.var1_result_label.setObjectName("var1_result_label")
+        self.verticalLayout_3.addWidget(self.var1_result_label)
+        self.horizontalLayout.addLayout(self.verticalLayout_3)
+        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem1)
+        self.save_graph_pushbutton = QtWidgets.QPushButton(self.centralwidget)
+        self.save_graph_pushbutton.setObjectName("save_graph_pushbutton")
+        self.horizontalLayout.addWidget(self.save_graph_pushbutton)
+        spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem2)
+        self.verticalLayout_2.addLayout(self.horizontalLayout)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 569, 21))
+        self.menubar.setObjectName("menubar")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.find_values_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">Find Values:</span></p></body></html>"))
+        self.length_label.setText(_translate("MainWindow", "Length:"))
+        self.save_graph_pushbutton.setText(_translate("MainWindow", "Save Graph"))
+from mplwidget import MplWidget
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = plot_window()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())

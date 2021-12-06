@@ -1,0 +1,23 @@
+MOS test bench
+* Include external file that contains MOSFET Model
+.INCLUDE D:\Grad_Project\Github\task5\130nm_bulk.LIB
+.INCLUDE techsweep_params.cir
+
+** Circuit Description **
+* power supply
+vdsn dn 0 dc=0  
+vgsn gn 0 dc=0  
+vbsn bn 0 dc={-sb} 
+
+
+* circuit
+mn dn gn 0 bn nmos L={Len} W=4u
+
+
+*sweep
+.DC vgsn 0 1 0.1 vdsn 0 1 0.5
+.TEMP 27
+*saving parameters
+.save i(vdsn) @mn[gm] @mn[gmbs] @mn[gds] @mn[cgg] @mn[cgs] @mn[cgd] @mn[cdd] @mn[cbs] @mn[vdsat]
+
+.end

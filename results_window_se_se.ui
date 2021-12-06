@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Results_window_se_se</class>
+ <widget class="QMainWindow" name="Results_window_se_se">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>549</width>
+    <height>206</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Table of Results</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QTableWidget" name="tableWidget">
+      <row>
+       <property name="text">
+        <string>CL=</string>
+       </property>
+      </row>
+      <column>
+       <property name="text">
+        <string>CL</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>Av</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>BW</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>GBW</string>
+       </property>
+      </column>
+      <column>
+       <property name="text">
+        <string>UGF</string>
+       </property>
+      </column>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>549</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
